@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 
 export default function Home() {
   const [url, setUrl] = useState("");
@@ -23,6 +24,19 @@ export default function Home() {
     const data = await response.json();
 
     setShortUrl(data.shortUrl);
+    const existingLinks = JSON.parse(
+  localStorage.getItem("links") || "[]" //local persistence, no auth
+);
+
+existingLinks.push({
+  originalUrl: url,
+  shortUrl: data.shortUrl,
+});
+
+localStorage.setItem(
+  "links",
+  JSON.stringify(existingLinks)
+);
 
   } catch {
     alert("Please enter a valid full URL.");
@@ -87,7 +101,14 @@ export default function Home() {
           Example: https://google.com
         </p>
       </div>
-
+      <div className="mt-6 text-center">
+  <Link
+    href="/dashboard"
+    className="text-blue-400 underline"
+  >
+    View Dashboard
+  </Link>
+</div>
     </main>
   );
 }
