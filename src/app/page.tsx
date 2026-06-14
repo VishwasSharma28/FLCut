@@ -4,16 +4,32 @@ import { useState } from "react";
 
 export default function Home() {
   const [url, setUrl] = useState("");
+  const [shortUrl, setShortUrl] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleShorten = () => {
+  const handleShorten = async () => {
+  setLoading(true);
     try {
-      new URL(url);
+    new URL(url);
 
-      alert("Valid URL ✅");
-    } catch {
-      alert("Please enter a valid full URL.");
-    }
-  };
+    const response = await fetch("/api/shorten", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ url }),
+    });
+
+    const data = await response.json();
+
+    setShortUrl(data.shortUrl);
+
+  } catch {
+    alert("Please enter a valid full URL.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <main className="min-h-screen bg-black text-white flex flex-col items-center justify-center px-4">
@@ -39,10 +55,29 @@ export default function Home() {
 
         <button
           onClick={handleShorten}
-          className="w-full bg-white text-black p-3 rounded-lg font-semibold"
+          disabled={loading}
+          className="w-full bg-white text-black p-3 rounded-lg font-semibold cursor-pointer hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Shorten URL
+          {loading ? "Shortening..." : "Shorten URL"}
+          
         </button>
+        {
+  shortUrl && (
+    <div className="mt-4 text-center">
+      <p className="text-gray-400 mb-2">
+        Shortened URL:
+      </p>
+
+      <a
+        href={shortUrl}
+        target="_blank"
+        className="text-blue-400 underline"
+      >
+        {shortUrl}
+      </a>
+    </div>
+  )
+}
       </div>
 
       {/* Instructions Section */}
