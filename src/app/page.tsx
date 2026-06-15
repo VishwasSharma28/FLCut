@@ -4,111 +4,179 @@ import { useState } from "react";
 import Link from "next/link";
 
 export default function Home() {
+
   const [url, setUrl] = useState("");
   const [shortUrl, setShortUrl] = useState("");
   const [loading, setLoading] = useState(false);
+  const [customAlias, setCustomAlias] = useState("");
+  const [error, setError] = useState("");
 
   const handleShorten = async () => {
-  setLoading(true);
+
+    setLoading(true);
+    setError("");
+
     try {
-    new URL(url);
 
-    const response = await fetch("/api/shorten", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ url }),
-    });
+      new URL(url);
 
-    const data = await response.json();
+      const response = await fetch("/api/shorten", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
 
-    setShortUrl(data.shortUrl);
-    const existingLinks = JSON.parse(
-  localStorage.getItem("links") || "[]" //local persistence, no auth
-);
+        body: JSON.stringify({
+          url,
+          customAlias,
+        }),
+      });
 
-existingLinks.push({
-  originalUrl: url,
-  shortUrl: data.shortUrl,
-});
+      const data = await response.json();
 
-localStorage.setItem(
-  "links",
-  JSON.stringify(existingLinks)
-);
+      // backend error
+      if (data.error) {
 
-  } catch {
-    alert("Please enter a valid full URL.");
-  } finally {
-    setLoading(false);
-  }
-};
+        setError(data.error);
+        setShortUrl("");
+
+        return;
+      }
+
+      // success
+      setShortUrl(data.shortUrl);
+
+      const existingLinks = JSON.parse(
+        localStorage.getItem("links") || "[]"
+      );
+
+      existingLinks.push({
+        originalUrl: url,
+        shortUrl: data.shortUrl,
+      });
+
+      localStorage.setItem(
+        "links",
+        JSON.stringify(existingLinks)
+      );
+
+    } catch {
+
+      setError("Please enter a valid full URL.");
+      setShortUrl("");
+
+    } finally {
+
+      setLoading(false);
+
+    }
+  };
 
   return (
+
     <main className="min-h-screen bg-black text-white flex flex-col items-center justify-center px-4">
 
       {/* Generator Section */}
       <div className="w-full max-w-xl p-6 border border-gray-700 rounded-xl">
+
         <h1 className="text-4xl font-bold mb-6 text-center">
           FLCut
         </h1>
 
+        {/* URL Input */}
         <input
-            type="text"
-            placeholder="Enter your long URL..."
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                handleShorten();
+          type="text"
+          placeholder="Enter your long URL..."
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleShorten();
+            }
+          }}
+          className="w-full p-3 rounded-lg bg-gray-900 border border-gray-700 outline-none"
+        />
+
+        {/* Custom Alias Input */}
+        <input
+  type="text"
+  placeholder="Custom alias (optional)"
+  value={customAlias}
+  onChange={(e) => setCustomAlias(e.target.value)}
+  onKeyDown={(e) => {
+    if (e.key === "Enter") {
+      handleShorten();
     }
   }}
-  className="w-full p-3 rounded-lg bg-gray-900 border border-gray-700 outline-none mb-4"
+  className="w-full p-3 rounded-lg bg-gray-900 border border-gray-700 outline-none mt-4"
 />
 
+        {/* Button */}
         <button
           onClick={handleShorten}
           disabled={loading}
-          className="w-full bg-white text-black p-3 rounded-lg font-semibold cursor-pointer hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full p-3 rounded-lg bg-white text-black font-semibold mt-4 hover:bg-gray-200 hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? "Shortening..." : "Shorten URL"}
-          
         </button>
-        {
-  shortUrl && (
-    <div className="mt-4 text-center">
-      <p className="text-gray-400 mb-2">
-        Shortened URL:
-      </p>
 
-      <a
-        href={shortUrl}
-        target="_blank"
-        className="text-blue-400 underline"
-      >
-        {shortUrl}
-      </a>
-    </div>
-  )
-}
+        {/* Error Message */}
+        {
+          error && (
+            <p className="text-red-400 mt-4 text-center">
+              {error}
+            </p>
+          )
+        }
+
+        {/* Short URL Output */}
+        {
+          shortUrl && (
+            <div className="mt-4 text-center">
+
+              <p className="text-gray-400 mb-2">
+                Shortened URL:
+              </p>
+
+              <a
+                href={shortUrl}
+                target="_blank"
+                className="text-blue-400 underline"
+              >
+                {shortUrl}
+              </a>
+
+            </div>
+          )
+        }
+
       </div>
 
       {/* Instructions Section */}
       <div className="mt-6 text-center text-sm text-gray-400 max-w-xl">
-        <p>Please include https:// in your URL.</p>
+
+        <p>
+          Please include https:// in your URL.
+        </p>
+
         <p className="mt-2">
           Example: https://google.com
         </p>
+
       </div>
+
+      {/* Dashboard Link */}
       <div className="mt-6 text-center">
-  <Link
-    href="/dashboard"
-    className="text-blue-400 underline"
-  >
-    View Dashboard
-  </Link>
-</div>
+
+        <Link
+          href="/dashboard"
+          className="text-blue-400 underline"
+        >
+          View Dashboard
+        </Link>
+
+      </div>
+
     </main>
   );
 }
