@@ -9,6 +9,7 @@ export default function Home() {
   const [shortUrl, setShortUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [customAlias, setCustomAlias] = useState("");
+  const [expiresAt, setExpiresAt] = useState("");
   const [error, setError] = useState("");
 
   const handleShorten = async () => {
@@ -27,8 +28,9 @@ export default function Home() {
         },
 
         body: JSON.stringify({
-          url,
-          customAlias,
+            url,
+            customAlias,
+            expiresAt,
         }),
       });
 
@@ -109,6 +111,14 @@ export default function Home() {
     }
   }}
   className="w-full p-3 rounded-lg bg-gray-900 border border-gray-700 outline-none mt-4"
+/>
+{/* Expiry Input */}
+<input
+  type="datetime-local"
+  step="1"
+  value={expiresAt}
+  onChange={(e) => setExpiresAt(e.target.value)}
+  className="w-full p-3 rounded-lg bg-gray-900 border border-gray-700 outline-none mt-4 text-gray-400 [color-scheme:dark]"
 />
 
         {/* Button */}

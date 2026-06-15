@@ -16,6 +16,17 @@ export default async function RedirectPage({ params }: PageProps) {
       shortCode: shortCode,
     },
   });
+  if (link?.expiresAt && new Date() > new Date(link.expiresAt)) {
+
+  return (
+    <div className="min-h-screen bg-black text-white flex items-center justify-center">
+      <h1 className="text-3xl font-bold">
+        This link has expired.
+      </h1>
+    </div>
+  );
+
+}
 
   if (!link) {
     return <h1>Link not found</h1>;

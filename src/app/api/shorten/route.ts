@@ -17,7 +17,7 @@ export async function POST(request: Request) {
 
     const body = await request.json();
 
-    const { url, customAlias } = body;
+    const { url, customAlias, expiresAt } = body;
 
     // if custom alias exists, use it
     // otherwise generate random nanoid
@@ -60,9 +60,12 @@ export async function POST(request: Request) {
 
     const newLink = await prisma.link.create({
       data: {
-        originalUrl: url,
-        shortCode,
-      },
+  originalUrl: url,
+  shortCode,
+  expiresAt: expiresAt
+  ? new Date(expiresAt)
+  : null,
+},
     });
 
     return NextResponse.json({
