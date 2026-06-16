@@ -1,0 +1,126 @@
+FLCut Analytics Implementation
+================================
+
+WHAT WAS BROKEN
+---------------
+1. Unique visitors always showed 0, even after many clicks.
+2. Every click record stored "NO_COOKIE_FOUND" as the visitorId instead of
+   a real visitor identifier.
+3. The site was completely broken for a while — any shortened link would
+   redirect to google.com instead of the actual destination.
+
+
+ROOT CAUSE
+----------
+There were two middleware files:
+
+  middleware.ts        (project root)
+  src/middleware.ts    (inside src/)
+
+Next.js only ever runs the one at the project ROOT. That file contained old
+debugging code that redirected every request — including shortened links —
+to https://google.com. So no redirect was working at all.
+
+The src/middleware.ts was dead code (Next.js never ran it), and only had a
+console.log left in.
+
+The visitorId bug was simpler: the redirect page (src/app/[shortCode]/page.tsx)
+tried to READ a "visitorId" cookie, but nothing ever WROTE that cookie.
+Server Components in Next.js cannot set cookies — only middleware or API
+routes can. So the cookie was always missing, and the code fell back to
+the literal string "NO_COOKIE_FOUND".
+
+
+WHAT WAS CHANGED
+----------------
+File 1: middleware.ts (project root)
+  - Removed the broken google.com redirect.
+  - Now assigns a random visitorId cookie to every new visitor.
+  - If the visitor already has a cookie, leaves it alone.
+  - Passes all requests through normally with NextResponse.next().
+
+File 2: src/middleware.ts
+  - Removed the console.log debug line.
+  - Added a comment explaining this file is inactive.
+
+File 3: src/app/[shortCode]/page.tsx
+  - Removed console.log("SHORTCODE RECEIVED:") debug line.
+  - Removed console.log("VISITOR ID:") debug line.
+  - Removed the "NO_COOKIE_FOUND" fallback string.
+  - Added a parseDevice() function that converts a raw user-agent into a
+    short readable label: "Mobile", "Tablet", "Desktop", or "Bot/Script".
+  - Stores that label in Click.device instead of the full raw user-agent.
+
+File 4: src/app/analytics/[shortCode]/page.tsx
+  - Added a Recent Clicks table with columns: Time, Visitor ID, Device,
+    Referrer.
+  - Visitor ID is shown truncated (first 8 characters + ellipsis) to keep
+    the table readable.
+  - Moved Total Clicks, Unique Visitors, and Click Records into a 3-column
+    grid for cleaner layout.
+  - Kept the same dark styling as the rest of the app.
+
+
+WHY THE FIX WORKS
+-----------------
+Middleware in Next.js runs on every request BEFORE the page renders. That
+means by the time the redirect page runs and tries to read the cookie, the
+middleware has already set it. So cookieStore.get("visitorId") now always
+finds a real value.
+
+The cookie is set with:
+  - httpOnly: true   — JavaScript in the browser can't read or steal it.
+  - sameSite: lax    — Sent on normal navigations, blocked on cross-site POSTs.
+  - maxAge: 1 year   — The visitor is remembered for a long time.
+  - path: "/"        — Valid across the whole site.
+
+nanoid(16) generates a 16-character random ID, which is practically
+collision-proof for a small URL shortener.
+
+
+HOW UNIQUE VISITOR TRACKING NOW WORKS
+--------------------------------------
+1. A visitor opens a short link (e.g. localhost:3000/abc123).
+2. Middleware checks: does this request have a "visitorId" cookie?
+   - No  → create one (nanoid), attach it to the response.
+   - Yes → leave it as-is.
+3. The redirect page runs. It reads the cookie value.
+4. It creates a Click record in the database with that visitorId.
+5. The analytics page loads all Click records, collects all visitorId
+   values into a Set (which automatically removes duplicates), and counts
+   the size. That count is Unique Visitors.
+
+So if the same person clicks the link 5 times, their cookie stays the same,
+so their visitorId stays the same, so they appear as 1 unique visitor.
+If 3 different people click it once each, 3 different cookies exist, so
+unique visitors = 3.
+
+
+HOW DEVICE TRACKING NOW WORKS
+------------------------------
+Every browser sends a "user-agent" header describing what it is. For example:
+  Mozilla/5.0 (Linux; Android 10; ...) Mobile Safari/537.36
+
+The parseDevice() function checks that string for keywords:
+  - "mobile", "android", "iphone", "ipad" → "Mobile"
+  - "tablet"                               → "Tablet"
+  - "curl", "wget", "python", "axios"      → "Bot/Script"
+  - anything else                          → "Desktop"
+
+This label is stored in Click.device. The analytics table shows it per click.
+No external libraries needed — just a regular expression check.
+
+The referrer header (if present) is also stored. It tells you which website
+the visitor came from. If they typed the URL directly, it's stored as "Direct".
+
+
+FUTURE IMPROVEMENTS
+--------------------
+- Add a real browser/OS parser library (like ua-parser-js) for more
+  accurate device detection (e.g. distinguish Chrome from Firefox).
+- Hash the IP address for a stronger fingerprint fallback when cookies
+  are blocked.
+- Add a chart (e.g. clicks over time) to the analytics page.
+- Add country/city tracking using an IP geolocation API.
+- Limit the Recent Clicks table to the last 50 rows with pagination.
+- Add a "copy short URL" button on the analytics page.

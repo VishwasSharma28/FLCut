@@ -64,6 +64,24 @@ export default function DashboardPage() {
               >
                 {link.shortUrl}
               </a>
+              <div className="mt-4 flex gap-4">
+
+  <a
+    href={link.shortUrl}
+    target="_blank"
+    className="px-3 py-2 border border-gray-700 rounded-lg hover:bg-gray-900"
+  >
+    Open Link
+  </a>
+
+  <a
+    href={`/analytics/${link.shortUrl.split("/").pop()}`}
+    className="px-3 py-2 border border-gray-700 rounded-lg hover:bg-gray-900"
+  >
+    View Analytics
+  </a>
+
+</div>
 
             </div>
 
