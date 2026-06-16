@@ -23,42 +23,42 @@ export async function POST(request: Request) {
 
     //past date validation
 
-if (launchAt && new Date(launchAt) < now) {
-  return NextResponse.json(
-    {
-      error: "Launch time cannot be in the past",
-    },
-    {
-      status: 400,
+    if (launchAt && new Date(launchAt) < now) {
+      return NextResponse.json(
+        {
+          error: "Launch time cannot be in the past",
+        },
+        {
+          status: 400,
+        }
+      );
     }
-  );
-}
 
-if (expiresAt && new Date(expiresAt) < now) {
-  return NextResponse.json(
-    {
-      error: "Expiry time cannot be in the past",
-    },
-    {
-      status: 400,
+    if (expiresAt && new Date(expiresAt) < now) {
+      return NextResponse.json(
+        {
+          error: "Expiry time cannot be in the past",
+        },
+        {
+          status: 400,
+        }
+      );
     }
-  );
-}
 
-if (
-  launchAt &&
-  expiresAt &&
-  new Date(expiresAt) <= new Date(launchAt)
-) {
-  return NextResponse.json(
-    {
-      error: "Expiry time must be after launch time",
-    },
-    {
-      status: 400,
+    if (
+      launchAt &&
+      expiresAt &&
+      new Date(expiresAt) <= new Date(launchAt)
+    ) {
+      return NextResponse.json(
+        {
+          error: "Expiry time must be after launch time",
+        },
+        {
+          status: 400,
+        }
+      );
     }
-  );
-}
 
     // if custom alias exists, use it
     // otherwise generate random nanoid
@@ -101,19 +101,19 @@ if (
 
     const newLink = await prisma.link.create({
       data: {
-  originalUrl: url,
-  shortCode,
-  launchAt: launchAt
-    ? new Date(launchAt)
-    : null,
-  expiresAt: expiresAt
-    ? new Date(expiresAt)
-    : null,
-},
+        originalUrl: url,
+        shortCode,
+        launchAt: launchAt
+          ? new Date(launchAt)
+          : null,
+        expiresAt: expiresAt
+          ? new Date(expiresAt)
+          : null,
+      },
     });
 
     return NextResponse.json({
-      shortUrl: `http://localhost:3000/${newLink.shortCode}`,
+      shortUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/${newLink.shortCode}`
     });
 
   } catch (error) {
