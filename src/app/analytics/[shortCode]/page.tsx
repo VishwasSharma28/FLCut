@@ -57,6 +57,18 @@ export default async function AnalyticsPage({ params }: PageProps) {
           <p className="break-all">{link.originalUrl}</p>
         </div>
 
+        {/* Launch Time */}
+        <div className="border border-gray-700 rounded-xl p-4">
+          <p className="text-gray-400 mb-2">Launch Time</p>
+          <p>{link.launchAt ? new Date(link.launchAt).toLocaleString() : "Immediate"}</p>
+        </div>
+
+        {/* Expiry Time */}
+        <div className="border border-gray-700 rounded-xl p-4">
+          <p className="text-gray-400 mb-2">Expiry Time</p>
+          <p>{link.expiresAt ? new Date(link.expiresAt).toLocaleString() : "Never"}</p>
+        </div>
+
         {/* Stats row */}
         <div className="grid grid-cols-3 gap-4">
 
