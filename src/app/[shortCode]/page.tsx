@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { cookies, headers } from "next/headers";
 import { nanoid } from "nanoid";
+import LetterGlitch from "@/components/LetterGlitch";
 
 type PageProps = {
   params: Promise<{
@@ -39,24 +40,39 @@ export default async function RedirectPage({ params }: PageProps) {
 
   if (!link) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <h1 className="text-3xl font-bold">Link not found</h1>
+      <div className="relative min-h-screen overflow-hidden bg-black text-white">
+        <div className="fixed inset-0 z-0">
+          <LetterGlitch glitchColors={["#0f172a","#1e293b","#334155"]} glitchSpeed={80} centerVignette outerVignette smooth />
+        </div>
+        <div className="relative z-10 flex items-center justify-center min-h-screen">
+          <h1 className="text-3xl font-bold">Link not found</h1>
+        </div>
       </div>
     );
   }
 
   if (link.launchAt && new Date() < new Date(link.launchAt)) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <h1 className="text-3xl font-bold">This link is not live yet.</h1>
+      <div className="relative min-h-screen overflow-hidden bg-black text-white">
+        <div className="fixed inset-0 z-0">
+          <LetterGlitch glitchColors={["#0f172a","#1e293b","#334155"]} glitchSpeed={80} centerVignette outerVignette smooth />
+        </div>
+        <div className="relative z-10 flex items-center justify-center min-h-screen">
+          <h1 className="text-3xl font-bold">This link is not live yet.</h1>
+        </div>
       </div>
     );
   }
 
   if (link.expiresAt && new Date() > new Date(link.expiresAt)) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <h1 className="text-3xl font-bold">This link has expired.</h1>
+      <div className="relative min-h-screen overflow-hidden bg-black text-white">
+        <div className="fixed inset-0 z-0">
+          <LetterGlitch glitchColors={["#0f172a","#1e293b","#334155"]} glitchSpeed={80} centerVignette outerVignette smooth />
+        </div>
+        <div className="relative z-10 flex items-center justify-center min-h-screen">
+          <h1 className="text-3xl font-bold">This link has expired.</h1>
+        </div>
       </div>
     );
   }

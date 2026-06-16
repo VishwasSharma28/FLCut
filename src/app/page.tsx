@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import LetterGlitch from "@/components/LetterGlitch";
 
 export default function Home() {
 
@@ -89,7 +90,21 @@ export default function Home() {
 
   return (
 
-    <main className="min-h-screen bg-black text-white flex flex-col items-center justify-center px-4 py-16">
+    <main className="relative min-h-screen overflow-hidden bg-black text-white">
+
+      {/* Background */}
+      <div className="fixed inset-0 z-0">
+        <LetterGlitch
+          glitchColors={["#0f172a", "#1e293b", "#334155"]}
+          glitchSpeed={80}
+          centerVignette
+          outerVignette
+          smooth
+        />
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 py-16">
 
       {/* Hero Section */}
       <div className="text-center mb-10 max-w-xl">
@@ -229,6 +244,8 @@ export default function Home() {
         >
           View Dashboard
         </Link>
+
+      </div>
 
       </div>
 

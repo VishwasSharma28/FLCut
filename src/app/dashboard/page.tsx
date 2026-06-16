@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import LetterGlitch from "@/components/LetterGlitch";
 
 type Link = {
   originalUrl: string;
@@ -22,7 +23,21 @@ export default function DashboardPage() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-black text-white p-8">
+    <main className="relative min-h-screen overflow-hidden bg-black text-white">
+
+      {/* Background */}
+      <div className="fixed inset-0 z-0">
+        <LetterGlitch
+          glitchColors={["#0f172a", "#1e293b", "#334155"]}
+          glitchSpeed={80}
+          centerVignette
+          outerVignette
+          smooth
+        />
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10 p-8">
 
       <h1 className="text-4xl font-bold mb-8 text-center">
         Your Dashboard
@@ -89,6 +104,7 @@ export default function DashboardPage() {
 
         )}
 
+      </div>
       </div>
 
     </main>

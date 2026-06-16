@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import LetterGlitch from "@/components/LetterGlitch";
 
 type PageProps = {
   params: Promise<{
@@ -20,8 +21,13 @@ export default async function AnalyticsPage({ params }: PageProps) {
 
   if (!link) {
     return (
-      <main className="min-h-screen bg-black text-white flex items-center justify-center">
-        <h1 className="text-3xl font-bold">Link not found</h1>
+      <main className="relative min-h-screen overflow-hidden bg-black text-white">
+        <div className="fixed inset-0 z-0">
+          <LetterGlitch glitchColors={["#0f172a","#1e293b","#334155"]} glitchSpeed={80} centerVignette outerVignette smooth />
+        </div>
+        <div className="relative z-10 flex items-center justify-center min-h-screen">
+          <h1 className="text-3xl font-bold">Link not found</h1>
+        </div>
       </main>
     );
   }
@@ -39,7 +45,21 @@ export default async function AnalyticsPage({ params }: PageProps) {
   const sortedSources = Object.entries(sourceCounts).sort((a, b) => b[1] - a[1]);
 
   return (
-    <main className="min-h-screen bg-black text-white p-8">
+    <main className="relative min-h-screen overflow-hidden bg-black text-white">
+
+      {/* Background */}
+      <div className="fixed inset-0 z-0">
+        <LetterGlitch
+          glitchColors={["#0f172a", "#1e293b", "#334155"]}
+          glitchSpeed={80}
+          centerVignette
+          outerVignette
+          smooth
+        />
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10 p-8">
 
       <h1 className="text-4xl font-bold mb-8">Analytics</h1>
 
@@ -159,6 +179,8 @@ export default async function AnalyticsPage({ params }: PageProps) {
           )}
 
         </div>
+
+      </div>
 
       </div>
 
