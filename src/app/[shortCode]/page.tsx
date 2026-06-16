@@ -6,6 +6,9 @@ import LetterGlitch from "@/components/LetterGlitch";
 import BackButton from "@/components/BackButton";
 import PageFooter from "@/components/PageFooter";
 
+// always re-render on every request — launchAt/expiresAt must use the real current time
+export const dynamic = "force-dynamic";
+
 type PageProps = {
   params: Promise<{
     shortCode: string;
