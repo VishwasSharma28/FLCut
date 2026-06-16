@@ -30,6 +30,7 @@ model Click {
   visitorId  String?
   referrer   String?
   device     String?
+  source     String?
   createdAt  DateTime @default(now())
 
   link Link @relation(fields: [linkId], references: [id])

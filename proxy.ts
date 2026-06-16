@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { nanoid } from "nanoid";
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const response = NextResponse.next();
 
   // if visitor already has a cookie, leave it alone
@@ -9,7 +9,7 @@ export function middleware(request: NextRequest) {
     return response;
   }
 
-  // primary: assign a new random visitor ID
+  // assign a new random visitor ID to first-time visitors
   const newVisitorId = nanoid(16);
 
   response.cookies.set("visitorId", newVisitorId, {

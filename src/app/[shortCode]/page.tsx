@@ -17,6 +17,19 @@ function parseDevice(ua: string): string {
   return "Desktop";
 }
 
+// identify which app or browser sent the request
+function parseSource(ua: string): string {
+  if (/Instagram/i.test(ua)) return "Instagram";
+  if (/LinkedIn/i.test(ua)) return "LinkedIn";
+  if (/WhatsApp/i.test(ua)) return "WhatsApp";
+  if (/FBAN|FBAV/i.test(ua)) return "Facebook";
+  if (/Telegram/i.test(ua)) return "Telegram";
+  if (/Edg\//i.test(ua)) return "Edge";
+  if (/Chrome/i.test(ua)) return "Chrome";
+  if (/Safari/i.test(ua)) return "Safari";
+  return "Unknown";
+}
+
 export default async function RedirectPage({ params }: PageProps) {
   const { shortCode } = await params;
 
@@ -61,6 +74,7 @@ export default async function RedirectPage({ params }: PageProps) {
 
   const referrer = headerStore.get("referer") ?? "Direct";
   const device = parseDevice(userAgent);
+  const source = parseSource(userAgent);
 
   await prisma.click.create({
     data: {
@@ -68,6 +82,7 @@ export default async function RedirectPage({ params }: PageProps) {
       visitorId,
       referrer,
       device,
+      source,
     },
   });
 

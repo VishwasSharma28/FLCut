@@ -30,6 +30,14 @@ export default async function AnalyticsPage({ params }: PageProps) {
     link.clickRecords.map((c) => c.visitorId).filter(Boolean)
   ).size;
 
+  // count clicks per source
+  const sourceCounts: Record<string, number> = {};
+  for (const click of link.clickRecords) {
+    const s = click.source ?? "Unknown";
+    sourceCounts[s] = (sourceCounts[s] ?? 0) + 1;
+  }
+  const sortedSources = Object.entries(sourceCounts).sort((a, b) => b[1] - a[1]);
+
   return (
     <main className="min-h-screen bg-black text-white p-8">
 
@@ -69,6 +77,26 @@ export default async function AnalyticsPage({ params }: PageProps) {
 
         </div>
 
+        {/* Traffic Sources */}
+        <div className="border border-gray-700 rounded-xl p-4">
+
+          <p className="text-gray-400 mb-4">Traffic Sources</p>
+
+          {sortedSources.length === 0 ? (
+            <p className="text-gray-500 text-sm">No data yet.</p>
+          ) : (
+            <ul className="space-y-2">
+              {sortedSources.map(([source, count]) => (
+                <li key={source} className="flex justify-between text-sm">
+                  <span className="text-gray-300">{source}</span>
+                  <span className="font-bold">{count}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+
+        </div>
+
         {/* Recent Clicks table */}
         <div className="border border-gray-700 rounded-xl p-4">
 
@@ -84,6 +112,7 @@ export default async function AnalyticsPage({ params }: PageProps) {
                     <th className="pb-2 pr-4">Time</th>
                     <th className="pb-2 pr-4">Visitor ID</th>
                     <th className="pb-2 pr-4">Device</th>
+                    <th className="pb-2 pr-4">Source</th>
                     <th className="pb-2">Referrer</th>
                   </tr>
                 </thead>
@@ -103,6 +132,9 @@ export default async function AnalyticsPage({ params }: PageProps) {
                       </td>
                       <td className="py-2 pr-4 text-gray-300">
                         {click.device ?? "—"}
+                      </td>
+                      <td className="py-2 pr-4 text-gray-300">
+                        {click.source ?? "—"}
                       </td>
                       <td className="py-2 text-gray-300 break-all">
                         {click.referrer ?? "Direct"}
