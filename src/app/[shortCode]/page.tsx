@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { cookies, headers } from "next/headers";
 import { nanoid } from "nanoid";
 import LetterGlitch from "@/components/LetterGlitch";
+import BackButton from "@/components/BackButton";
+import PageFooter from "@/components/PageFooter";
 
 type PageProps = {
   params: Promise<{
@@ -31,6 +33,9 @@ function parseSource(ua: string): string {
   return "Unknown";
 }
 
+// shared card used by error screens
+const errorCard = "rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-8 sm:p-12 text-center w-full max-w-sm";
+
 export default async function RedirectPage({ params }: PageProps) {
   const { shortCode } = await params;
 
@@ -40,40 +45,61 @@ export default async function RedirectPage({ params }: PageProps) {
 
   if (!link) {
     return (
-      <div className="relative min-h-screen overflow-hidden bg-black text-white">
-        <div className="fixed inset-0 z-0">
-          <LetterGlitch glitchColors={["#0f172a","#1e293b","#334155"]} glitchSpeed={80} centerVignette outerVignette smooth />
-        </div>
-        <div className="relative z-10 flex items-center justify-center min-h-screen">
-          <h1 className="text-3xl font-bold">Link not found</h1>
-        </div>
-      </div>
+      <>
+        <main className="relative min-h-screen overflow-hidden bg-black text-white">
+          <div className="fixed inset-0 z-0">
+            <LetterGlitch glitchColors={["#0f172a","#1e293b","#334155"]} glitchSpeed={80} centerVignette outerVignette smooth />
+          </div>
+          <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 gap-6">
+            <div className={errorCard}>
+              <h1 className="text-2xl sm:text-3xl font-bold">Link not found</h1>
+              <p className="text-gray-400 text-sm mt-2">This short link does not exist.</p>
+            </div>
+            <BackButton href="/" label="Home" />
+          </div>
+        </main>
+        <PageFooter />
+      </>
     );
   }
 
   if (link.launchAt && new Date() < new Date(link.launchAt)) {
     return (
-      <div className="relative min-h-screen overflow-hidden bg-black text-white">
-        <div className="fixed inset-0 z-0">
-          <LetterGlitch glitchColors={["#0f172a","#1e293b","#334155"]} glitchSpeed={80} centerVignette outerVignette smooth />
-        </div>
-        <div className="relative z-10 flex items-center justify-center min-h-screen">
-          <h1 className="text-3xl font-bold">This link is not live yet.</h1>
-        </div>
-      </div>
+      <>
+        <main className="relative min-h-screen overflow-hidden bg-black text-white">
+          <div className="fixed inset-0 z-0">
+            <LetterGlitch glitchColors={["#0f172a","#1e293b","#334155"]} glitchSpeed={80} centerVignette outerVignette smooth />
+          </div>
+          <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 gap-6">
+            <div className={errorCard}>
+              <h1 className="text-2xl sm:text-3xl font-bold">Not live yet</h1>
+              <p className="text-gray-400 text-sm mt-2">This link hasn&apos;t launched. Check back later.</p>
+            </div>
+            <BackButton href="/" label="Home" />
+          </div>
+        </main>
+        <PageFooter />
+      </>
     );
   }
 
   if (link.expiresAt && new Date() > new Date(link.expiresAt)) {
     return (
-      <div className="relative min-h-screen overflow-hidden bg-black text-white">
-        <div className="fixed inset-0 z-0">
-          <LetterGlitch glitchColors={["#0f172a","#1e293b","#334155"]} glitchSpeed={80} centerVignette outerVignette smooth />
-        </div>
-        <div className="relative z-10 flex items-center justify-center min-h-screen">
-          <h1 className="text-3xl font-bold">This link has expired.</h1>
-        </div>
-      </div>
+      <>
+        <main className="relative min-h-screen overflow-hidden bg-black text-white">
+          <div className="fixed inset-0 z-0">
+            <LetterGlitch glitchColors={["#0f172a","#1e293b","#334155"]} glitchSpeed={80} centerVignette outerVignette smooth />
+          </div>
+          <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 gap-6">
+            <div className={errorCard}>
+              <h1 className="text-2xl sm:text-3xl font-bold">Link expired</h1>
+              <p className="text-gray-400 text-sm mt-2">This link is no longer active.</p>
+            </div>
+            <BackButton href="/" label="Home" />
+          </div>
+        </main>
+        <PageFooter />
+      </>
     );
   }
 

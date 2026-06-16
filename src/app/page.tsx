@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import LetterGlitch from "@/components/LetterGlitch";
+import PageFooter from "@/components/PageFooter";
 
 export default function Home() {
 
@@ -89,6 +91,7 @@ export default function Home() {
   };
 
   return (
+    <>
 
     <main className="relative min-h-screen overflow-hidden bg-black text-white">
 
@@ -106,149 +109,162 @@ export default function Home() {
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 py-16">
 
-      {/* Hero Section */}
-      <div className="text-center mb-10 max-w-xl">
+        {/* Logo */}
+        <div id="logo-placeholder" className="mb-6">
+          <Image
+            src="/logo.png"
+            alt="FLCut logo"
+            width={80}
+            height={80}
+            className="mx-auto sm:w-24 sm:h-24"
+            priority
+          />
+        </div>
 
+        {/* Hero Section */}
+        <div className="text-center mb-8 max-w-xl">
 
+          <h1 className="text-4xl sm:text-5xl font-bold mb-3 leading-tight">
+            FLCUT
+          </h1>
 
-        <h1 className="text-5xl font-bold mb-4 leading-tight">
-          FLCUT
-        </h1>
+          <p className="text-gray-400 text-base leading-relaxed">
+            Shorten Links.<br />Track Performance.
+          </p>
 
-        <p className="text-gray-400 text-base leading-relaxed">
-          Shorten Links.<br />Track Performance.
-        </p>
+        </div>
 
-      </div>
+        {/* Generator Section — glassmorphism card */}
+        <div className="w-full max-w-xl p-6 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md">
 
-      {/* Generator Section — glassmorphism card */}
-      <div className="w-full max-w-xl p-6 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md">
+          {/* URL Input */}
+          <input
+            type="text"
+            placeholder="Enter your long URL..."
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleShorten();
+              }
+            }}
+            className="w-full p-3 rounded-xl bg-black/40 border border-white/10 outline-none placeholder-gray-500 focus:border-white/30 transition-colors"
+          />
 
-        {/* URL Input */}
-        <input
-          type="text"
-          placeholder="Enter your long URL..."
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              handleShorten();
-            }
-          }}
-          className="w-full p-3 rounded-lg bg-gray-900 border border-gray-700 outline-none"
-        />
+          {/* Custom Alias Input */}
+          <input
+            type="text"
+            placeholder="Custom alias (optional)"
+            value={customAlias}
+            onChange={(e) => setCustomAlias(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleShorten();
+              }
+            }}
+            className="w-full p-3 rounded-xl bg-black/40 border border-white/10 outline-none mt-3 placeholder-gray-500 focus:border-white/30 transition-colors"
+          />
 
-        {/* Custom Alias Input */}
-        <input
-          type="text"
-          placeholder="Custom alias (optional)"
-          value={customAlias}
-          onChange={(e) => setCustomAlias(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              handleShorten();
-            }
-          }}
-          className="w-full p-3 rounded-lg bg-gray-900 border border-gray-700 outline-none mt-4"
-        />
+          {/* Launch Time Input */}
+          <input
+            type="datetime-local"
+            step={60}
+            value={launchAt}
+            onChange={(e) => setLaunchAt(e.target.value)}
+            min={new Date().toISOString().slice(0, 16)}
+            className="w-full p-3 rounded-xl bg-black/40 border border-white/10 outline-none mt-3 text-gray-400 [color-scheme:dark] focus:border-white/30 transition-colors"
+          />
 
-        {/* Launch Time Input */}
-        <input
-          type="datetime-local"
-          step={60}
-          value={launchAt}
-          onChange={(e) => setLaunchAt(e.target.value)}
-          min={new Date().toISOString().slice(0, 16)}
-          className="w-full p-3 rounded-lg bg-gray-900 border border-gray-700 outline-none mt-4 text-gray-400 [color-scheme:dark]"
-        />
+          {/* Expiry Input */}
+          <input
+            type="datetime-local"
+            step={60}
+            value={expiresAt}
+            onChange={(e) => setExpiresAt(e.target.value)}
+            min={new Date().toISOString().slice(0, 16)}
+            className="w-full p-3 rounded-xl bg-black/40 border border-white/10 outline-none mt-3 text-gray-400 [color-scheme:dark] focus:border-white/30 transition-colors"
+          />
 
-        {/* Expiry Input */}
-        <input
-          type="datetime-local"
-          step={60}
-          value={expiresAt}
-          onChange={(e) => setExpiresAt(e.target.value)}
-          min={new Date().toISOString().slice(0, 16)}
-          className="w-full p-3 rounded-lg bg-gray-900 border border-gray-700 outline-none mt-4 text-gray-400 [color-scheme:dark]"
-        />
+          {/* Primary: Shorten URL */}
+          <button
+            onClick={handleShorten}
+            disabled={loading}
+            className="w-full p-3 rounded-xl bg-white text-black font-semibold mt-4 hover:bg-gray-100 transition-colors cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
+          >
+            {loading ? (
+              <span className="flex items-center justify-center gap-2">
+                <span>Shortening</span>
+                <span className="flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-black inline-block animate-bounce [animation-delay:0ms]" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-black inline-block animate-bounce [animation-delay:150ms]" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-black inline-block animate-bounce [animation-delay:300ms]" />
+                </span>
+              </span>
+            ) : "Shorten URL"}
+          </button>
 
-        {/* Shorten Button */}
-        <button
-          onClick={handleShorten}
-          disabled={loading}
-          className="w-full p-3 rounded-lg bg-white text-black font-semibold mt-4 hover:bg-gray-200 hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {loading ? "Shortening..." : "Shorten URL"}
-        </button>
+          {/* Secondary: Clear Form */}
+          <button
+            onClick={handleClear}
+            type="button"
+            className="w-full p-3 rounded-xl border border-white/20 font-medium mt-3 hover:bg-white/10 transition-colors cursor-pointer"
+          >
+            Clear Form
+          </button>
 
-        {/* Clear Button */}
-        <button
-          onClick={handleClear}
-          type="button"
-          className="w-full p-3 rounded-lg border border-gray-700 mt-3 hover:bg-gray-900 hover:cursor-pointer"
-        >
-          Clear Form
-        </button>
-
-        {/* Error Message */}
-        {
-          error && (
-            <p className="text-red-400 mt-4 text-center">
-              {error}
-            </p>
-          )
-        }
-
-        {/* Short URL Output */}
-        {
-          shortUrl && (
-            <div className="mt-4 text-center">
-
-              <p className="text-gray-400 mb-2">
-                Shortened URL:
+          {/* Error Message */}
+          {
+            error && (
+              <p className="text-red-400 mt-4 text-center text-sm">
+                {error}
               </p>
+            )
+          }
 
-              <a
-                href={shortUrl}
-                target="_blank"
-                className="text-blue-400 underline"
-              >
-                {shortUrl}
-              </a>
+          {/* Short URL Output */}
+          {
+            shortUrl && (
+              <div className="mt-4 text-center">
 
+                <p className="text-gray-400 mb-2 text-sm">
+                  Shortened URL:
+                </p>
+
+                <a
+                  href={shortUrl}
+                  target="_blank"
+                  className="text-blue-400 underline break-all"
+                >
+                  {shortUrl}
+                </a>
+
+              </div>
+            )
+          }
+
+        </div>
+
+        {/* Tertiary: View Dashboard */}
+        <div className="w-full max-w-xl mt-3">
+          <Link href="/dashboard">
+            <div className="w-full p-3 rounded-xl border border-white/10 text-gray-400 text-sm font-medium hover:bg-white/5 hover:text-white transition-colors cursor-pointer text-center">
+              View Dashboard
             </div>
-          )
-        }
+          </Link>
+        </div>
 
-      </div>
-
-      {/* Instructions Section */}
-      <div className="mt-6 text-center text-sm text-gray-400 max-w-xl">
-
-        <p>
-          Please include https:// in your URL.
+        {/* Instructions */}
+        <p className="mt-6 text-center text-xs text-gray-500">
+          Include https:// — e.g. https://google.com
         </p>
-
-        <p className="mt-2">
-          Example: https://google.com
-        </p>
-
-      </div>
-
-      {/* Dashboard Link */}
-      <div className="mt-6 text-center">
-
-        <Link
-          href="/dashboard"
-          className="text-blue-400 underline"
-        >
-          View Dashboard
-        </Link>
-
-      </div>
 
       </div>
 
     </main>
+
+    {/* Copyright — solid black band, no effects */}
+    <PageFooter />
+
+    </>
   );
 }

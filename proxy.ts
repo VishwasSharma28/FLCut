@@ -4,6 +4,12 @@ import { nanoid } from "nanoid";
 export function proxy(request: NextRequest) {
   const response = NextResponse.next();
 
+  // don't set analytics cookies unless the user has accepted
+  const consent = request.cookies.get("cookieConsent")?.value;
+  if (consent !== "accepted") {
+    return response;
+  }
+
   // if visitor already has a cookie, leave it alone
   if (request.cookies.get("visitorId")) {
     return response;
