@@ -17,7 +17,48 @@ export async function POST(request: Request) {
 
     const body = await request.json();
 
-    const { url, customAlias, expiresAt } = body;
+    const { url, customAlias, launchAt, expiresAt } = body;
+
+    const now = new Date();
+
+    //past date validation
+
+if (launchAt && new Date(launchAt) < now) {
+  return NextResponse.json(
+    {
+      error: "Launch time cannot be in the past",
+    },
+    {
+      status: 400,
+    }
+  );
+}
+
+if (expiresAt && new Date(expiresAt) < now) {
+  return NextResponse.json(
+    {
+      error: "Expiry time cannot be in the past",
+    },
+    {
+      status: 400,
+    }
+  );
+}
+
+if (
+  launchAt &&
+  expiresAt &&
+  new Date(expiresAt) <= new Date(launchAt)
+) {
+  return NextResponse.json(
+    {
+      error: "Expiry time must be after launch time",
+    },
+    {
+      status: 400,
+    }
+  );
+}
 
     // if custom alias exists, use it
     // otherwise generate random nanoid
@@ -62,9 +103,12 @@ export async function POST(request: Request) {
       data: {
   originalUrl: url,
   shortCode,
+  launchAt: launchAt
+    ? new Date(launchAt)
+    : null,
   expiresAt: expiresAt
-  ? new Date(expiresAt)
-  : null,
+    ? new Date(expiresAt)
+    : null,
 },
     });
 

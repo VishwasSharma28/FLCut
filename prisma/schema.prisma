@@ -18,5 +18,6 @@ model Link {
   shortCode   String   @unique
   clicks      Int      @default(0)
   expiresAt   DateTime?
+  launchAt    DateTime?
   createdAt   DateTime @default(now())
 }

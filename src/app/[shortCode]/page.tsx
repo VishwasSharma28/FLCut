@@ -16,6 +16,18 @@ export default async function RedirectPage({ params }: PageProps) {
       shortCode: shortCode,
     },
   });
+  if (
+  link?.launchAt &&
+  new Date() < new Date(link.launchAt)
+) {
+  return (
+    <div className="min-h-screen bg-black text-white flex items-center justify-center">
+      <h1 className="text-3xl font-bold">
+        This link is not live yet.
+      </h1>
+    </div>
+  );
+}
   if (link?.expiresAt && new Date() > new Date(link.expiresAt)) {
 
   return (

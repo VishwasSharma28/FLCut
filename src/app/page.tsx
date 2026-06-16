@@ -11,6 +11,7 @@ export default function Home() {
   const [customAlias, setCustomAlias] = useState("");
   const [expiresAt, setExpiresAt] = useState("");
   const [error, setError] = useState("");
+  const [launchAt, setLaunchAt] = useState("");
 
   const handleShorten = async () => {
 
@@ -28,9 +29,10 @@ export default function Home() {
         },
 
         body: JSON.stringify({
-            url,
-            customAlias,
-            expiresAt,
+          url,
+          customAlias,
+          launchAt,
+          expiresAt,
         }),
       });
 
@@ -74,6 +76,17 @@ export default function Home() {
     }
   };
 
+  const handleClear = () => {
+
+    setUrl("");
+    setCustomAlias("");
+    setLaunchAt("");
+    setExpiresAt("");
+    setShortUrl("");
+    setError("");
+
+  };
+
   return (
 
     <main className="min-h-screen bg-black text-white flex flex-col items-center justify-center px-4">
@@ -101,33 +114,54 @@ export default function Home() {
 
         {/* Custom Alias Input */}
         <input
-  type="text"
-  placeholder="Custom alias (optional)"
-  value={customAlias}
-  onChange={(e) => setCustomAlias(e.target.value)}
-  onKeyDown={(e) => {
-    if (e.key === "Enter") {
-      handleShorten();
-    }
-  }}
-  className="w-full p-3 rounded-lg bg-gray-900 border border-gray-700 outline-none mt-4"
-/>
-{/* Expiry Input */}
-<input
-  type="datetime-local"
-  step="1"
-  value={expiresAt}
-  onChange={(e) => setExpiresAt(e.target.value)}
-  className="w-full p-3 rounded-lg bg-gray-900 border border-gray-700 outline-none mt-4 text-gray-400 [color-scheme:dark]"
-/>
+          type="text"
+          placeholder="Custom alias (optional)"
+          value={customAlias}
+          onChange={(e) => setCustomAlias(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleShorten();
+            }
+          }}
+          className="w-full p-3 rounded-lg bg-gray-900 border border-gray-700 outline-none mt-4"
+        />
 
-        {/* Button */}
+        {/* Launch Time Input */}
+        <input
+          type="datetime-local"
+          step={60}
+          value={launchAt}
+          onChange={(e) => setLaunchAt(e.target.value)}
+          min={new Date().toISOString().slice(0, 16)}
+          className="w-full p-3 rounded-lg bg-gray-900 border border-gray-700 outline-none mt-4 text-gray-400 [color-scheme:dark]"
+        />
+
+        {/* Expiry Input */}
+        <input
+          type="datetime-local"
+          step={60}
+          value={expiresAt}
+          onChange={(e) => setExpiresAt(e.target.value)}
+          min={new Date().toISOString().slice(0, 16)}
+          className="w-full p-3 rounded-lg bg-gray-900 border border-gray-700 outline-none mt-4 text-gray-400 [color-scheme:dark]"
+        />
+
+        {/* Shorten Button */}
         <button
           onClick={handleShorten}
           disabled={loading}
           className="w-full p-3 rounded-lg bg-white text-black font-semibold mt-4 hover:bg-gray-200 hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? "Shortening..." : "Shorten URL"}
+        </button>
+
+        {/* Clear Button */}
+        <button
+          onClick={handleClear}
+          type="button"
+          className="w-full p-3 rounded-lg border border-gray-700 mt-3 hover:bg-gray-900 hover:cursor-pointer"
+        >
+          Clear Form
         </button>
 
         {/* Error Message */}
