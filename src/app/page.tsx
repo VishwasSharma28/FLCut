@@ -34,8 +34,9 @@ export default function Home() {
         body: JSON.stringify({
           url,
           customAlias,
-          launchAt,
-          expiresAt,
+          // convert browser local time → UTC ISO string so Vercel stores the correct time
+          launchAt: launchAt ? new Date(launchAt).toISOString() : undefined,
+          expiresAt: expiresAt ? new Date(expiresAt).toISOString() : undefined,
         }),
       });
 

@@ -46,6 +46,17 @@ export default async function RedirectPage({ params }: PageProps) {
     where: { shortCode },
   });
 
+  // TEMP_DEBUG — remove after verifying fix in production
+  console.log("[FLCut Debug]", {
+    shortCode,
+    serverUTC: new Date().toISOString(),
+    serverTZ: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    launchAt_stored: link?.launchAt?.toISOString() ?? null,
+    expiresAt_stored: link?.expiresAt?.toISOString() ?? null,
+    isBeforeLaunch: link?.launchAt ? new Date() < link.launchAt : false,
+    isAfterExpiry: link?.expiresAt ? new Date() > link.expiresAt : false,
+  });
+
   if (!link) {
     return (
       <>
