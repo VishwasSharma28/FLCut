@@ -68,7 +68,7 @@ Each redirect creates a click record containing visitor information, device type
 ## Getting Started/SETUP
 
 ```bash
-git clone https://github.com/your-org/FLCut.git
+git clone https://github.com/VishwasSharma28/FLCut.git
 cd FLCut
 npm install
 
