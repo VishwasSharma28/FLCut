@@ -26,7 +26,7 @@ I used custom aliases and randomly generated short codes. Random codes are simpl
 
 The dashboard is stored locally in their browser rather than fetching from database(security issues), since authentication isnt being used.
 
-For analytics, I used browser cookies to identify repeat visitors. Fetches some stuff like short codes, original url, short url from local browser cookies(browser storage) and short codes, expiry and launch timings from db. This is not perfect because users can clear cookies or switch devices, but it is lightweight and does not require authentication. I intentionally avoided more invasive tracking methods.
+For analytics, I used browser cookies to identify repeat visitors. Fetches some stuff like short codes, original url, short url from local browser cookies(browser storage) and short codes, expiry and launch timings from db. This is not perfect because users can clear cookies or switch devices, but it is lightweight and does not require authentication. I intentionally avoided more invasive tracking methods. The registration capping was intentionally not added as visiting the link doesnt guarantee the registration.
 
 ### Prioritization
 
