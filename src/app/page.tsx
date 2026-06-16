@@ -89,14 +89,25 @@ export default function Home() {
 
   return (
 
-    <main className="min-h-screen bg-black text-white flex flex-col items-center justify-center px-4">
+    <main className="min-h-screen bg-black text-white flex flex-col items-center justify-center px-4 py-16">
 
-      {/* Generator Section */}
-      <div className="w-full max-w-xl p-6 border border-gray-700 rounded-xl">
+      {/* Hero Section */}
+      <div className="text-center mb-10 max-w-xl">
 
-        <h1 className="text-4xl font-bold mb-6 text-center">
-          FLCut
+
+
+        <h1 className="text-5xl font-bold mb-4 leading-tight">
+          FLCUT
         </h1>
+
+        <p className="text-gray-400 text-base leading-relaxed">
+          Shorten Links.<br />Track Performance.
+        </p>
+
+      </div>
+
+      {/* Generator Section — glassmorphism card */}
+      <div className="w-full max-w-xl p-6 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md">
 
         {/* URL Input */}
         <input
