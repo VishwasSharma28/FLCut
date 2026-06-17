@@ -36,6 +36,31 @@ function parseSource(ua: string): string {
   return "Unknown";
 }
 
+/**
+ * Returns true for automated preview/crawler requests that should NOT
+ * be counted as real clicks.
+ *
+ * Matched agents (all are headless bots, not human in-app browsers):
+ *   facebookexternalhit — Meta's OG preview scraper (FB / IG / Messenger)
+ *   Facebot             — legacy Meta alias
+ *   meta-externalagent  — newer Meta crawl agent
+ *   Meta-WebIndexer     — Meta AI indexer
+ *   WhatsApp/<version>  — WhatsApp link-preview fetcher
+ *                         (real WA users have a full Mozilla/5.0 UA)
+ *   Twitterbot          — Twitter/X card preview
+ *   Slackbot            — Slack unfurl bot
+ *   LinkedInBot         — LinkedIn preview
+ *   TelegramBot         — Telegram preview
+ *   Googlebot           — Google crawler
+ *   bingbot             — Bing crawler
+ *   DuckDuckBot         — DuckDuckGo crawler
+ *   ia_archiver         — Internet Archive
+ *   Applebot            — Apple Siri previews
+ */
+function isCrawler(ua: string): boolean {
+  return /facebookexternalhit|Facebot|meta-externalagent|Meta-WebIndexer|WhatsApp\/\d|Twitterbot|Slackbot|LinkedInBot|TelegramBot|Googlebot|bingbot|DuckDuckBot|ia_archiver|Applebot/i.test(ua);
+}
+
 // shared card used by error screens
 const errorCard = "rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-8 sm:p-12 text-center w-full max-w-sm";
 
@@ -123,29 +148,33 @@ export default async function RedirectPage({ params }: PageProps) {
   const userAgent = headerStore.get("user-agent") ?? "Unknown";
   const ip = headerStore.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "";
 
-  // cookie is the primary source; fall back to a fingerprint from IP + UA
-  const visitorId =
-    cookieStore.get("visitorId")?.value ??
-    nanoid(16); // middleware should have set it, but this guards against edge cases
+  // Skip click recording for automated preview/crawler requests.
+  // These bots fetch the URL to generate a link preview and are NOT real visits.
+  if (!isCrawler(userAgent)) {
+    // cookie is the primary source; fall back to a fingerprint from IP + UA
+    const visitorId =
+      cookieStore.get("visitorId")?.value ??
+      nanoid(16); // middleware should have set it, but this guards against edge cases
 
-  const referrer = headerStore.get("referer") ?? "Direct";
-  const device = parseDevice(userAgent);
-  const source = parseSource(userAgent);
+    const referrer = headerStore.get("referer") ?? "Direct";
+    const device = parseDevice(userAgent);
+    const source = parseSource(userAgent);
 
-  await prisma.click.create({
-    data: {
-      linkId: link.id,
-      visitorId,
-      referrer,
-      device,
-      source,
-    },
-  });
+    await prisma.click.create({
+      data: {
+        linkId: link.id,
+        visitorId,
+        referrer,
+        device,
+        source,
+      },
+    });
 
-  await prisma.link.update({
-    where: { id: link.id },
-    data: { clicks: { increment: 1 } },
-  });
+    await prisma.link.update({
+      where: { id: link.id },
+      data: { clicks: { increment: 1 } },
+    });
+  }
 
   redirect(link.originalUrl);
 }
