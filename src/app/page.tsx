@@ -167,24 +167,30 @@ export default function Home() {
           />
 
           {/* Launch Time Input */}
-          <input
-            type="datetime-local"
-            step={60}
-            value={launchAt}
-            onChange={(e) => setLaunchAt(e.target.value)}
-            min={new Date().toISOString().slice(0, 16)}
-            className="w-full p-3 rounded-xl bg-black/40 border border-white/10 outline-none mt-3 text-gray-400 [color-scheme:dark] focus:border-white/30 transition-colors"
-          />
+          <div className="mt-3">
+            <label className="block text-xs text-gray-400 mb-1 ml-1">Launch Time (Optional)</label>
+            <input
+              type="datetime-local"
+              step={60}
+              value={launchAt}
+              onChange={(e) => setLaunchAt(e.target.value)}
+              min={new Date().toISOString().slice(0, 16)}
+              className="w-full p-3 rounded-xl bg-black/40 border border-white/10 outline-none text-gray-400 [color-scheme:dark] focus:border-white/30 transition-colors"
+            />
+          </div>
 
           {/* Expiry Input */}
-          <input
-            type="datetime-local"
-            step={60}
-            value={expiresAt}
-            onChange={(e) => setExpiresAt(e.target.value)}
-            min={new Date().toISOString().slice(0, 16)}
-            className="w-full p-3 rounded-xl bg-black/40 border border-white/10 outline-none mt-3 text-gray-400 [color-scheme:dark] focus:border-white/30 transition-colors"
-          />
+          <div className="mt-3">
+            <label className="block text-xs text-gray-400 mb-1 ml-1">Expiry Time (Optional)</label>
+            <input
+              type="datetime-local"
+              step={60}
+              value={expiresAt}
+              onChange={(e) => setExpiresAt(e.target.value)}
+              min={new Date().toISOString().slice(0, 16)}
+              className="w-full p-3 rounded-xl bg-black/40 border border-white/10 outline-none text-gray-400 [color-scheme:dark] focus:border-white/30 transition-colors"
+            />
+          </div>
 
           {/* Primary: Shorten URL */}
           <button
