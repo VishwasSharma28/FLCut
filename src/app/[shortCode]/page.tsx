@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { cookies, headers } from "next/headers";
 import { nanoid } from "nanoid";
+import { createHash } from "crypto";
 import LetterGlitch from "@/components/LetterGlitch";
 import BackButton from "@/components/BackButton";
 import PageFooter from "@/components/PageFooter";
@@ -58,7 +59,7 @@ function parseSource(ua: string): string {
  *   Applebot            — Apple Siri previews
  */
 function isCrawler(ua: string): boolean {
-  return /facebookexternalhit|Facebot|meta-externalagent|Meta-WebIndexer|WhatsApp\/\d|Twitterbot|Slackbot|LinkedInBot|TelegramBot|Googlebot|bingbot|DuckDuckBot|ia_archiver|Applebot/i.test(ua);
+  return /bot|crawler|spider|preview|facebookexternalhit|Facebot|meta-externalagent|Meta-WebIndexer|WhatsApp\/\d|Twitterbot|Slackbot|LinkedInBot|TelegramBot|Googlebot|bingbot|DuckDuckBot|ia_archiver|Applebot/i.test(ua);
 }
 
 // shared card used by error screens
@@ -154,7 +155,7 @@ export default async function RedirectPage({ params }: PageProps) {
     // cookie is the primary source; fall back to a fingerprint from IP + UA
     const visitorId =
       cookieStore.get("visitorId")?.value ??
-      nanoid(16); // middleware should have set it, but this guards against edge cases
+      createHash("sha256").update(`${ip}-${userAgent}`).digest("hex").slice(0, 16);
 
     const referrer = headerStore.get("referer") ?? "Direct";
     const device = parseDevice(userAgent);
