@@ -3,6 +3,7 @@ import Image from "next/image";
 import LetterGlitch from "@/components/LetterGlitch";
 import BackButton from "@/components/BackButton";
 import PageFooter from "@/components/PageFooter";
+import LocalTime from "@/components/LocalTime";
 
 // shared style tokens
 const card = "rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-4";
@@ -110,13 +111,13 @@ export default async function AnalyticsPage({ params }: PageProps) {
             {/* Launch Time */}
             <div className={card}>
               <p className={label}>Launch Time</p>
-              <p>{link.launchAt ? new Date(link.launchAt).toLocaleString() : "Immediate"}</p>
+              <p><LocalTime value={link.launchAt} fallback="Immediate" /></p>
             </div>
 
             {/* Expiry Time */}
             <div className={card}>
               <p className={label}>Expiry Time</p>
-              <p>{link.expiresAt ? new Date(link.expiresAt).toLocaleString() : "Never"}</p>
+              <p><LocalTime value={link.expiresAt} fallback="Never" /></p>
             </div>
 
             {/* Stats — stack on mobile, 3-col on sm+ */}
@@ -185,7 +186,7 @@ export default async function AnalyticsPage({ params }: PageProps) {
                           className="border-b border-white/5 hover:bg-white/5 transition-colors"
                         >
                           <td className="py-2 pr-4 text-gray-300 whitespace-nowrap">
-                            {new Date(click.createdAt).toLocaleString()}
+                            <LocalTime value={click.createdAt} />
                           </td>
                           <td className="py-2 pr-4 font-mono text-gray-300 whitespace-nowrap">
                             {click.visitorId
